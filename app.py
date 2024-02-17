@@ -1,0 +1,105 @@
+from flask import Flask, render_template,jsonify,request
+from Employee import Employee
+
+app = Flask(__name__)
+
+
+employeesList = [
+    Employee(id = 1, name = "Jhon", age = 32, department = "Sales"),
+    Employee(id = 2, name = "Alex", age = 22, department = "Product"),
+    Employee(id = 3, name = "Pablo", age = 31, department = "Engineering"),
+    Employee(id = 4, name = "Kate", age = 21, department = "Marketing"),
+    Employee(id = 5, name = "Carlos", age = 35, department = "HR"),
+    Employee(id = 6, name = "Juan", age = 26, department = "Sales"),
+    Employee(id = 6, name = "Juan", age = 40, department = "Sales"),
+
+
+]
+
+@app.route("/")
+def index():
+    return render_template("index.html")
+
+
+@app.route("/employees")
+def employees():
+    return render_template("employees.html",employeesList = employeesList)
+
+
+@app.route("/employees/all")
+def employeesListEndpoint():
+    return displayAllEmployees(employeesList)
+
+
+@app.route("/employee/add", methods=['POST'])
+def addEmployee():
+    id = employeesList[-1].id + 1
+    name = request.json['name']
+    age = request.json['age']
+    department = request.json['department']
+
+    employee = Employee(id = id, name=name,age=age,department=department)
+    employeesList.append(employee)
+
+    return displayAllEmployees(employeesList)
+
+
+@app.route("/employees/find-by-name", methods = ['GET'])
+def findEmployeeByName():
+    name = request.args["name"]
+    employees = []
+    for employee in employeesList:
+        if employee.name == name:
+            employees.append(employee)
+    
+    
+    return displayAllEmployees(employees)
+
+@app.route("/employees/find/department/<department>")
+def findEmployeeByDepartment(department):
+    employees = []
+    for employee in employeesList:
+        if employee.department == department:
+            employees.append(employee)
+    
+    return displayAllEmployees(employees)
+
+@app.route("/employees/update/<id>", methods=['PUT'])
+def updateEmployee(id):
+    name = request.json['name']
+    age = request.json['age']
+    department = request.json['department']
+    salary = request.json['salary']
+    location = request.json['location']
+    
+    for employee in employeesList:
+        print(employee.id,id, employee.id == id)
+        if employee.id == int(id):
+            print(employee)
+            employee.name = name
+            employee.age = age
+            employee.department = department
+            employee.salary = salary
+            employee.location = location
+            break
+     
+    return displayAllEmployees(employeesList), 200
+
+
+@app.route("/employees/delete/<id>", methods=['DELETE'])
+def deleteEmployee(id):
+    
+    for employee in employeesList:
+        if employee.id == int(id):
+            employeesList.remove(employee)
+            break
+     
+    return displayAllEmployees(employeesList), 200
+
+
+def displayAllEmployees(employeesList):
+    return jsonify([employee.toDict() for employee in employeesList])
+
+
+if __name__:
+    app.run(debug=True, port=3000, host="localhost")

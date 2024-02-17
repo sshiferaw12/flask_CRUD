@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %} Employees {% endblock %}
+
+{% block content %} 
+
+<h1> Employees </h1> 
+
+<div class="list-group" style="width: 18rem;">
+    {% for employee in employeesList %}
+    <a href="#" class="list-group-item list-group-item-action"> {{ employee.name }} </a>
+   
+    {% endfor %}
+  </div>
+
+{% endblock %}
