@@ -42,6 +42,28 @@ def addEmployee():
     return displayAllEmployees(employeesList)
 
 
+@app.route("/employees/find-by-name", methods = ['GET'])
+def findEmployeeByName():
+    name = request.args["name"]
+    employees = []
+    for employee in employeesList:
+        if employee.name == name:
+            employees.append(employee)
+    
+    if len(employees) == 0: 
+        return [], 40
+    
+    return displayAllEmployees(employees)
+
+@app.route("/employees/find/department/<department>")
+def findEmployeeByDepartment(department):
+    employees = []
+    for employee in employeesList:
+        if employee.department == department:
+            employees.append(employee)
+    
+    return displayAllEmployees(employees)
+
 @app.route("/employees/update/<id>", methods=['PUT'])
 def updateEmployee(id):
     name = request.json['name']
